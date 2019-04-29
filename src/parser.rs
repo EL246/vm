@@ -1,25 +1,29 @@
-pub struct Parser {
-    original_content: String,
-    new_lines: Vec<String>,
+pub struct Parser<'a> {
+    new_lines: Vec<Command<'a>>,
 }
 
-impl Parser {
-    pub fn new(content: &str) {
-        parse_lines(content);
+impl<'a> Parser<'a>{
+    pub fn new<>(content: &str) {
+        let new_lines = parse_lines(content);
     }
 }
 
-pub fn parse_lines(content: &str) {
+pub fn parse_lines(content: &str) -> Vec<Command> {
+    let mut commands = Vec::new();
+
     let non_empty_lines: Vec<&str> = content.lines().
         filter(|line| !line.is_empty())
         .collect();
 
     for line in non_empty_lines {
-        parse_line(line);
+        if let Some(command) = parse_line(line) {
+            commands.push(command);
+        }
     }
+    commands
 }
 
-pub fn parse_line(line: &str) {
+pub fn parse_line(line: &str) -> Option<Command, > {
 //    remove comments:
 //    let commented_segment = line.find("//").unwrap_or(line.len());
 //    TODO: make this cleaner
@@ -27,10 +31,13 @@ pub fn parse_line(line: &str) {
     let clean_line = split_line[0];
 //    identify type of command
     if !clean_line.is_empty() {
-        let command = get_command(&clean_line);
-        print!("{:#?}", command);
+        let command_type = get_command(&clean_line);
+        print!("{:#?}", command_type);
+        //    create command and add to vector that will be passed to CodeWriter later
+        let new_command = Command { command_type, command: line };
+        return Some(new_command);
     }
-//    create command and add to vector that will be passed to CodeWriter later
+    None
 }
 
 //TODO: make this cleaner
@@ -69,9 +76,14 @@ fn parse_push(line: &str) -> CommandType {
     panic!("could not parse line")
 }
 
-#[derive(Debug)]
-enum CommandType<'a> {
-    Arithmetic { operation: String },
-    Push { var_type: &'a str, var: &'a str },
-    Pop { var_type: &'a str, var: &'a str },
+# [derive(Debug)]
+pub enum CommandType< 'a > {
+Arithmetic { operation: String },
+Push { var_type: & 'a str, var: & 'a str },
+Pop { var_type: & 'a str, var: & 'a str },
+}
+
+pub struct Command < 'a > {
+command_type: CommandType < 'a >,
+command: &'a str,
 }
