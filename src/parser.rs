@@ -1,3 +1,6 @@
+use super::Command;
+use super::CommandType;
+
 pub struct Parser<'a> {
     content: &'a str
 }
@@ -7,8 +10,8 @@ impl<'a> Parser<'a> {
         Parser { content }
     }
 
-    pub fn handle(&self) {
-        let new_lines = parse_lines(self);
+    pub fn handle(&'a self) -> Vec<Command<'a>> {
+        parse_lines(self)
     }
 }
 
@@ -28,19 +31,23 @@ fn parse_lines<'a>(parser : &'a Parser) -> Vec<Command<'a>> {
 }
 
 fn parse_line(line: &str) -> Option<Command, > {
-//    remove comments:
 //    let commented_segment = line.find("//").unwrap_or(line.len());
 //    TODO: make this cleaner
+
+//    remove comments
     let split_line: Vec<&str> = line.splitn(2, "//").collect();
     let clean_line = split_line[0];
-//    identify type of command
+
+//  identify type of command
     if !clean_line.is_empty() {
         let command_type = get_command(&clean_line);
         print!("{:#?}", command_type);
-        //    create command and add to vector that will be passed to CodeWriter later
+
+//      create command and add to vector that will be passed to CodeWriter later
         let new_command = Command { command_type, command: line };
         return Some(new_command);
     }
+
     None
 }
 
@@ -52,7 +59,7 @@ fn get_command(line: &str) -> CommandType {
     } else if line.contains("pop") {
         return parse_pop(line);
     }
-//TODO: check for arithmetic operation explicitly later
+// TODO: check for arithmetic operation explicitly
     let operation = line.replace("\\s", "");
     CommandType::Arithmetic { operation }
 }
@@ -78,16 +85,4 @@ fn parse_push(line: &str) -> CommandType {
         return CommandType::Push { var_type, var };
     }
     panic!("could not parse line")
-}
-
-#[derive(Debug)]
-enum CommandType<'a> {
-    Arithmetic { operation: String },
-    Push { var_type: &'a str, var: &'a str },
-    Pop { var_type: &'a str, var: &'a str },
-}
-
-struct Command<'a> {
-    command_type: CommandType<'a>,
-    command: &'a str,
 }
