@@ -30,7 +30,7 @@ impl File {
 }
 
 fn parse_lines(content: &String) {
-    parser::Parser::new(content);
+    parser::Parser::new(content).handle();
 }
 
 //TODO: implement writing to a file

@@ -1,17 +1,21 @@
 pub struct Parser<'a> {
-    new_lines: Vec<Command<'a>>,
+    content: &'a str
 }
 
-impl<'a> Parser<'a>{
-    pub fn new<>(content: &str) {
-        let new_lines = parse_lines(content);
+impl<'a> Parser<'a> {
+    pub fn new<>(content: &str) -> Parser {
+        Parser { content }
+    }
+
+    pub fn handle(&self) {
+        let new_lines = parse_lines(self);
     }
 }
 
-pub fn parse_lines(content: &str) -> Vec<Command> {
+fn parse_lines<'a>(parser : &'a Parser) -> Vec<Command<'a>> {
     let mut commands = Vec::new();
 
-    let non_empty_lines: Vec<&str> = content.lines().
+    let non_empty_lines: Vec<&str> = parser.content.lines().
         filter(|line| !line.is_empty())
         .collect();
 
@@ -23,7 +27,7 @@ pub fn parse_lines(content: &str) -> Vec<Command> {
     commands
 }
 
-pub fn parse_line(line: &str) -> Option<Command, > {
+fn parse_line(line: &str) -> Option<Command, > {
 //    remove comments:
 //    let commented_segment = line.find("//").unwrap_or(line.len());
 //    TODO: make this cleaner
@@ -40,8 +44,8 @@ pub fn parse_line(line: &str) -> Option<Command, > {
     None
 }
 
-//TODO: make this cleaner
-//TODO: check for input errors?
+// TODO: make this cleaner
+// TODO: check for input errors?
 fn get_command(line: &str) -> CommandType {
     if line.contains("push") {
         return parse_push(line);
@@ -76,14 +80,14 @@ fn parse_push(line: &str) -> CommandType {
     panic!("could not parse line")
 }
 
-# [derive(Debug)]
-pub enum CommandType< 'a > {
-Arithmetic { operation: String },
-Push { var_type: & 'a str, var: & 'a str },
-Pop { var_type: & 'a str, var: & 'a str },
+#[derive(Debug)]
+enum CommandType<'a> {
+    Arithmetic { operation: String },
+    Push { var_type: &'a str, var: &'a str },
+    Pop { var_type: &'a str, var: &'a str },
 }
 
-pub struct Command < 'a > {
-command_type: CommandType < 'a >,
-command: &'a str,
+struct Command<'a> {
+    command_type: CommandType<'a>,
+    command: &'a str,
 }
