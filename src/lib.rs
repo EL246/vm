@@ -31,8 +31,12 @@ impl File {
     }
 }
 
+// TODO:: better solution than cloning vector?
 fn parse_lines(content: &String) -> Vec<Command> {
-    parser::Parser::new(content).handle()
+    let mut parser = parser::Parser::new(content);
+    parser.handle();
+//   TODO:: create getter method
+    parser.result
 }
 
 fn write_lines(lines: Vec<Command>, filename: &str) {

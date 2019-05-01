@@ -2,33 +2,40 @@ use super::Command;
 use super::CommandType;
 
 pub struct Parser<'a> {
-    content: &'a str
+    content: &'a str,
+    pub result: Vec<Command<'a>>,
 }
 
 impl<'a> Parser<'a> {
     pub fn new<>(content: &str) -> Parser {
-        Parser { content }
-    }
-
-    pub fn handle(&'a self) -> Vec<Command<'a>> {
-        parse_lines(self)
-    }
-}
-
-fn parse_lines<'a>(parser : &'a Parser) -> Vec<Command<'a>> {
-    let mut commands = Vec::new();
-
-    let non_empty_lines: Vec<&str> = parser.content.lines().
-        filter(|line| !line.is_empty())
-        .collect();
-
-    for line in non_empty_lines {
-        if let Some(command) = parse_line(line) {
-            commands.push(command);
+        Parser {
+            content,
+            result: Vec::new(),
         }
     }
-    commands
+
+    // TODO: ok to have a static lifetime in this case?
+//    TODO: ok to have &mut self?
+    pub fn handle(&mut self) {
+        self.parse_lines();
+    }
+
+    fn parse_lines(&mut self) {
+//        let mut commands = Vec::new();
+
+        let non_empty_lines: Vec<&str> = self.content.lines().
+            filter(|line| !line.is_empty())
+            .collect();
+
+        for line in non_empty_lines {
+            if let Some(command) = parse_line(line) {
+                self.result.push(command);
+            }
+        }
+//        commands
+    }
 }
+
 
 fn parse_line(line: &str) -> Option<Command, > {
 //    let commented_segment = line.find("//").unwrap_or(line.len());

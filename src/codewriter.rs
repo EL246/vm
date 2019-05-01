@@ -30,15 +30,15 @@ impl<'a> CodeWriter<'a> {
 
     pub fn handle(&self) {
         let mut result: Vec<String> = Vec::new();
-        for command in self.lines_to_write {
+        for command in &self.lines_to_write {
             result.push(command.orig_command_commented());
             let new_commands = self.get_command_lines(command);
         }
     }
 
-    fn get_command_lines(&self, command: Command) -> Vec<String> {
+    fn get_command_lines(&self, command: &Command) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
-        let command_type = command.command_type;
+        let command_type = &command.command_type;
         match command_type {
             CommandType::Arithmetic { operation } => {
                 return result;
