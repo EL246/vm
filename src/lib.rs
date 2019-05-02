@@ -50,20 +50,6 @@ pub enum CommandType<'a> {
     Pop { var_type: &'a str, var: &'a str },
 }
 
-//impl Arithmetic {
-//
-//}
-
-//impl CommandType::Pop {
-//    fn create_commands() -> Vec<String> {
-        // pop static 17
-        // ram[static+17] = *SP
-        // SP--
-//    }
-//}
-
-//impl CommandType::Push {}
-
 pub struct Command<'a> {
     command_type: CommandType<'a>,
     command: &'a str,

@@ -14,8 +14,6 @@ impl<'a> Parser<'a> {
         }
     }
 
-    // TODO: ok to have a static lifetime in this case?
-//    TODO: ok to have &mut self?
     pub fn handle(&mut self) {
         self.parse_lines();
     }
